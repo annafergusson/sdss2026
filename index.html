@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dr Anna Fergusson">
+
+<title>Learning by tinkering: A ‘code blanks’ interactive worked example</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="index_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="index_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="index_files/libs/quarto-html/anchor.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="index_files/libs/bootstrap/bootstrap-d6a003b94517c951b2d65075d42fb01b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="index_files/libs/quarto-contrib/code-blanks-0.1.0/code-blanks.js"></script>
+<script src="index_files/libs/quarto-contrib/code-blanks-0.1.0/runner-webr.js"></script>
+<script src="index_files/libs/quarto-contrib/code-blanks-0.1.0/progressive-reveal.js"></script>
+<script src="index_files/libs/quarto-contrib/code-blanks-0.1.0/code-blanks-storage.js"></script>
+<link href="index_files/libs/quarto-contrib/code-blanks-0.1.0/code-blanks.css" rel="stylesheet">
+<script>window.codeBlanksFunctions = (window.codeBlanksFunctions || "") + "\n" + `get_nasa_weather_data <- function(location, start_date = NULL, end_date = format(Sys.Date() - 1, "%Y-%m-%d")) {
+  locations <- c(location)
+  data <- map_df(locations, function(loc) {
+    url <- paste0("https://www.stat-edu.cloud.edu.au/foo/nasa_weather_data.php?location=", loc,"&start_date=", start_date, "&end_date=", end_date) %>% URLencode()
+    tryCatch({
+      result <- fromJSON(url)
+      if (length(result) == 0) {
+        return(tibble())
+      }
+      as_tibble(result)
+    }, error = function(e) {
+      return(tibble())
+    })
+  })
+  if (nrow(data) == 0) {
+    stop("No data for that location - please try again", call. = FALSE)
+  }
+  data %>%
+    mutate(date = ymd(date))
+}
+`;</script>
+<script>window.codeBlanksPackages = ["dplyr","ggplot2","jsonlite","purrr","lubridate"];window.codeBlanksSetup = `library(ggplot2)
+library(dplyr)
+library(jsonlite)
+library(purrr)
+library(lubridate)
+theme_set(theme_minimal())`;window.codeBlanksPlotWidth = 600;window.codeBlanksPlotHeight = 300;window.codeBlanksProgressiveReveal = false;</script>
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Learning by tinkering: A ‘code blanks’ interactive worked example</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dr Anna Fergusson </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This interactive worked example has been adapted from the first lab task for DATASCI 100, and introductory data science course taught at the University of Auckland | Waipapa Taumata Rau.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For the labs actually used with students, a more advanced computational environment is used, to track and save student interactions within the lab task.</p>
+</div>
+</div>
+<p>This is a modified version of the lab task used, as some aspects of the lab task link to material/activities covered in the lectures before the lab task. Our lab tasks also provide interactive “tinker questions” (see Fergusson &amp; Pfannkuch, 2022) which are not included in this version.</p>
+<p>This version of the lab task was created using <a href="">Quarto</a> and the Quarto extension <a href=""><code>{code-blanks}</code></a>.</p>
+<section id="coding-is-for-everyone" class="level2">
+<h2 class="anchored" data-anchor-id="coding-is-for-everyone">Coding is for everyone!</h2>
+<p>For these labs, we are not focusing too much on the finer details of the code used. Rather than traditional worked examples, where things might be defined first, we will instead use code to generate things for a purpose, and then review key features of the code after.</p>
+<p><img src="images/image6.png" class="img-fluid"></p>
+<p>We have used a learning technique called progressive reveal for this lab task, so that you are not overwhelmed by a huge document of text to read at the beginning of the lab. Instead, as you work through, more and more of the text and lab is revealed.</p>
+<p>Your progress in the lab will be saved automatically, so you can complete the lab over several different sessions if you need, as long as you are using the same browser. You can clear all the saved work using the button found at the top of this page.</p>
+</section>
+<section id="ready-to-get-started" class="level2">
+<h2 class="anchored" data-anchor-id="ready-to-get-started">Ready to get staRted?</h2>
+<p>As explained earlier, these labs will focus on developing your skills to read and adapt code written in the programming language {R}.</p>
+<p><code>R</code> was developed by Ross Ihaka and Robert Gentleman while they were both statistics lecturers here at the University of Auckland. It’s a popular programming language for analysing data and used by data scientists around the world.</p>
+<p><img src="images/image2.gif" class="img-fluid"></p>
+<p><code>R</code> you ready?</p>
+</section>
+<section id="tracking-weather-data-over-time" class="level2">
+<h2 class="anchored" data-anchor-id="tracking-weather-data-over-time">Tracking weather data over time</h2>
+<p>During the lectures this week, we have explored a few different examples of data being tracked over time. Another example is data we can track over time is weather data, often called <strong>meteorological</strong> or <strong>climate data</strong>.</p>
+<p>The kinds of variables that we might record data about on an hourly or daily basis include temperature, wind speed, humidity, and precipitation (rainfall). Data about the weather can be tracked using a variety of devices. You can even buy your own weather station to track data from your home!</p>
+<p>In New Zealand, the <a href="https://www.metservice.com/">MetService</a> is the main organisation for collecting and sharing weather data. The MetService has a number of dedicated weather reporting stations throughout New Zealand and various offshore islands.</p>
+<iframe id="widget-iframe" width="280px" height="205px" src="https://services.metservice.com/weather-widget/widget?params=blue|small|landscape|days-3|classic&amp;loc=auckland&amp;type=urban" allowtransparency="true" style="border:none">
+</iframe>
+<div class="code-blanks-instructions-box">
+<p>Head to <a href="https://www.metservice.com/towns-cities">their page which lists the towns and cities</a> and pick a location outside of Auckland.</p>
+</div>
+<div class="code-blanks-response-box">
+<p>Enter the name of this location in the box below.</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+</section>
+<section id="nasa-weather-data" class="level2">
+<h2 class="anchored" data-anchor-id="nasa-weather-data">NASA weather data</h2>
+<p>NASA (National Aeronautics and Space Administration) is a US-based government agency. They use satellites and associated models to provide free weather data for locations around the world through their POWER (Prediction Of Worldwide Energy Resources) service.</p>
+<p>In the lectures, we learned how to visualise weather data about a location in New Zealand using NASA’s data access viewer (<a href="https://power.larc.nasa.gov/data-access-viewer/">power.larc.nasa.gov/data-access-viewer</a>). Use the same steps as in the video to visualise (graph) the temperature data for the location within New Zealand you selected earlier in the lab.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We will use weather data sourced from NASA for the rest of this lab, including the final lab challenge.</p>
+</div>
+</div>
+</section>
+<section id="hows-the-weather-in-auckland" class="level2">
+<h2 class="anchored" data-anchor-id="hows-the-weather-in-auckland">How’s the weather in Auckland?</h2>
+<p>The visualisation below was produced by the NASA data access viewer and displays the temperature in Auckland, along with some extra modelling components such as the red trend line (we won’t worry about these additional modelling components for now).</p>
+<p><img src="images/image5.png" class="img-fluid"></p>
+<div class="code-blanks-response-box">
+<p>What do you notice about the temperature in Auckland over this time?</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-response-box">
+<p>Were there any temperatures recorded above 24 degrees celsius?</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-response-box">
+<p>Were there any temperatures recorded below 12 degrees celsius?</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-response-box">
+<p>Does it look like it’s the coldest in Auckland around July/August?</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-response-box">
+<p>Is December always the hottest month of the year?</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+</section>
+<section id="recreating-the-visualisation-with-r-code" class="level2">
+<h2 class="anchored" data-anchor-id="recreating-the-visualisation-with-r-code">Recreating the visualisation with R code</h2>
+<p>We can recreate the visualisation above using R code.</p>
+<div class="code-blanks-instructions-box">
+<p>Press the “Run code” button below to re-produce the visualisation.</p>
+</div>
+<pre class="code-blanks"><code>weather_data &lt;- get_nasa_weather_data(location = <input class="code-blank-input" data-answer="&quot;Auckland&quot;" data-default="&quot;Auckland&quot;" value="&quot;Auckland&quot;" size="12">,
+                                      start_date = "2023-01-01",
+                                      end_date = "2025-01-01")
+  
+ggplot(data = weather_data) +
+  geom_line(aes(x = date, 
+                y = temperature_C, 
+                colour = location))</code></pre>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Code is just “fancy text” where certain features of the text can tell the computer what to do when reading/processing the code.</p>
+</div>
+</div>
+<p>In the code we just “ran”, we used a <strong>function</strong> named <code>get_nasa_weather_data</code> to do just that - get weather data from NASA!</p>
+<p>To get weather data, the computer needs to know where you want the data from, which is why we wrote <code>"Auckland"</code> after the <code>location =</code> part of the code within the <code>()</code> brackets.</p>
+</section>
+<section id="dont-misquote-me" class="level2">
+<h2 class="anchored" data-anchor-id="dont-misquote-me">Don’t misquote me!</h2>
+<p>Because Auckland is the name of an actual place, we needed to put <code>""</code> quotes around it.</p>
+<div class="code-blanks-instructions-box">
+<p>Run the code below <strong>just as it is without changing it</strong> to see what happens if we don’t use quotes!</p>
+</div>
+<pre class="code-blanks"><code>weather_data &lt;- get_nasa_weather_data(location = <input class="code-blank-input" data-answer="Auckland" data-default="Auckland" value="Auckland" size="10">,
+                                      start_date = "2023-01-01",
+                                      end_date = "2025-01-01")
+  
+ggplot(data = weather_data) +
+  geom_line(aes(x = date, 
+                y = temperature_C, 
+                colour = location))</code></pre>
+</section>
+<section id="getting-things-wrong-is-normal" class="level2">
+<h2 class="anchored" data-anchor-id="getting-things-wrong-is-normal">Getting things wrong is normal</h2>
+<p>The purple “error” message you just got is a normal part of programming or coding. Humans make mistakes all the time, and you will make many as part of using computational approaches to learn from data.</p>
+<p>The error messages can sometimes seem unhelpful, but they become easier to understand the more practice and experiences you have had with programming.</p>
+<p><img src="images/image1.png" class="img-fluid"></p>
+<p>For this “bug”, which is that we are missing quotes around Auckland, the error message doesn’t say that, instead it says “object ‘Auckland’ not found”. What does that mean?</p>
+<p>We will learn more about objects and what they are later in the course. For now, you can think of this “object not found” message as feedback that something you have typed in your code does not make sense to the computer - it can’t find what to do with it.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you get an error message like this, you can consider that one of the reasons could be that you forgot to put quotes around something in the code. Another common reason is that you have made a typo in your code.</p>
+</div>
+</div>
+</section>
+<section id="fixing-things-up" class="level2">
+<h2 class="anchored" data-anchor-id="fixing-things-up">Fixing things up</h2>
+<div class="code-blanks-instructions-box">
+<p>Change the code below to the <strong>location you selected earlier in the lab</strong>, and make sure you put quotes around its name.</p>
+<p>Then run the code below to successfully “debug” (get rid of any errors) with the code.</p>
+</div>
+<pre class="code-blanks"><code>weather_data &lt;- get_nasa_weather_data(location = <input class="code-blank-input" data-answer="Auckland" data-default="Auckland" value="Auckland" size="10">,
+                                      start_date = "2023-01-01",
+                                      end_date = "2025-01-01")
+  
+ggplot(data = weather_data) +
+  geom_line(aes(x = date, 
+                y = temperature_C, 
+                colour = location))</code></pre>
+</section>
+<section id="a-tale-of-two-cities" class="level2">
+<h2 class="anchored" data-anchor-id="a-tale-of-two-cities">A tale of two cities</h2>
+<p>We can use R code to get data about more than one location at the same time.</p>
+<div class="code-blanks-instructions-box">
+<p>Run the code below to see how the temperature data compares between Auckland and Christchurch.</p>
+</div>
+<pre class="code-blanks"><code>weather_data &lt;- get_nasa_weather_data(location = <input class="code-blank-input" data-answer="c(&quot;Auckland&quot;, &quot;Christchurch&quot;)" data-default="c(&quot;Auckland&quot;, &quot;Christchurch&quot;)" value="c(&quot;Auckland&quot;, &quot;Christchurch&quot;)" size="31">,
+                                      start_date = "2023-01-01",
+                                      end_date = "2025-01-01")
+  
+ggplot(data = weather_data) +
+  geom_line(aes(x = date, 
+                y = temperature_C, 
+                colour = location))</code></pre>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>c()</code> function was used here to supply more than one location.</p>
+</div>
+</div>
+<p>Being able to ask for data about more than one location means you can explore how the climate data compares!</p>
+<div class="code-blanks-instructions-box">
+<p>Try changing the code above to answer the questions that follow.</p>
+</div>
+<div class="code-blanks-response-box">
+<p>Is Auckland generally warmer than Christchurch?</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-response-box">
+<p>Do the temperatures in New York vary (change) less than they do in Auckland?</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-response-box">
+<p>Is Samoa generally a lot hotter than Auckland, and do the temperatures not vary as much?</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-response-box">
+<p>Is the general pattern for the temperatures in Melbourne across the year very different from that for Auckland?</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+</section>
+<section id="computers-dont-know-everything" class="level2">
+<h2 class="anchored" data-anchor-id="computers-dont-know-everything">Computers don’t know everything</h2>
+<p>When you enter a location, how does NASA know where in the world you mean? For example, there is a running joke that for the cartoon series The Simpsons, that they are based in a city called “Springfield” because over 30 states in the US have a city called Springfield.</p>
+<p><img src="images/image3.png" class="img-fluid"></p>
+<p>There are also many names of cities that are used in different countries.</p>
+<p><img src="images/image4.png" class="img-fluid"></p>
+<p>Several of the English names of places in New Zealand are also the names of places in other countries, for example, Thames, Oxford, Cambridge, etc.</p>
+<div class="code-blanks-instructions-box">
+<p>Run the code below and consider the visualisation produced.</p>
+</div>
+<pre class="code-blanks"><code>weather_data &lt;- get_nasa_weather_data(location = <input class="code-blank-input" data-answer="c(&quot;Auckland&quot;, &quot;Thames&quot;)" data-default="c(&quot;Auckland&quot;, &quot;Thames&quot;)" value="c(&quot;Auckland&quot;, &quot;Thames&quot;)" size="25">,
+                                      start_date = "2023-01-01",
+                                      end_date = "2025-01-01")
+  
+ggplot(data = weather_data) +
+  geom_line(aes(x = date, 
+                y = temperature_C, 
+                colour = location))</code></pre>
+<div class="code-blanks-response-box">
+<p>Why is it obvious that this Thames is not the one in New Zealand? Write your response in the box below.</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-instructions-box">
+<p>Now try changing the code below to see if you can figure out how to make sure that we are accessing weather data about locations within New Zealand (or any country).</p>
+</div>
+<pre class="code-blanks"><code>weather_data &lt;- get_nasa_weather_data(location = <input class="code-blank-input" data-answer="c(&quot;Auckland&quot;, &quot;Thames&quot;)" data-default="c(&quot;Auckland&quot;, &quot;Thames&quot;)" value="c(&quot;Auckland&quot;, &quot;Thames&quot;)" size="25">,
+                                      start_date = "2023-01-01",
+                                      end_date = "2025-01-01")
+  
+ggplot(data = weather_data) +
+  geom_line(aes(x = date, 
+                y = temperature_C, 
+                colour = location))</code></pre>
+</section>
+<section id="close-but-not-that-close" class="level2">
+<h2 class="anchored" data-anchor-id="close-but-not-that-close">Close but not that close</h2>
+<p>In the lecture where we explored how to visualise weather data using NASA’s data access viewer, we noted that the GPS co-ordinates used for location were not super specific (they were rounded to the nearest two decimal places).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Behind the scenes of the code, when you enter locations, another API service is being used to convert those location names into GPS coordinates.</p>
+</div>
+</div>
+<p>However, since the NASA POWER service rounds the GPS coordinates, you may end up with the same data if you choose two locations that are close to each other.</p>
+<div class="code-blanks-instructions-box">
+<p>Try this out by changing the code below to the names of two suburbs in Auckland which are close to each other. Change Mt Eden to another suburb, and then add a comma and use quotes to add the second suburb.</p>
+</div>
+<pre class="code-blanks"><code>weather_data &lt;- get_nasa_weather_data(location = <input class="code-blank-input" data-answer="c(&quot;Mt Eden&quot;)" data-default="c(&quot;Mt Eden&quot;)" value="c(&quot;Mt Eden&quot;)" size="14">,
+                                      start_date = "2023-01-01",
+                                      end_date = "2025-01-01")
+  
+ggplot(data = weather_data) +
+  geom_line(aes(x = date, 
+                y = temperature_C, 
+                colour = location))</code></pre>
+</section>
+<section id="climate-control" class="level2">
+<h2 class="anchored" data-anchor-id="climate-control">Climate control</h2>
+<p><strong>Mini challenge time!</strong></p>
+<div class="code-blanks-instructions-box">
+<p>You need to compare <strong>three locations</strong> in your visualisation, by adapting the code below.</p>
+<p>You <strong>can not</strong> use locations already used in this lab so far.</p>
+<p>One of the locations needs to be the location within New Zealand that you selected earlier in the lab.</p>
+<p>For the two additional locations, try to find one location somewhere else in the world, where it is generally colder than your location, and one where it is generally hotter.</p>
+</div>
+<pre class="code-blanks"><code>weather_data &lt;- get_nasa_weather_data(location = <input class="code-blank-input" data-answer="c(&quot;Mt Eden&quot;)" data-default="c(&quot;Mt Eden&quot;)" value="c(&quot;Mt Eden&quot;)" size="14">,
+                                      start_date = "2023-01-01",
+                                      end_date = "2025-01-01")
+  
+ggplot(data = weather_data) +
+  geom_line(aes(x = date, 
+                y = temperature_C, 
+                colour = location))</code></pre>
+</section>
+<section id="why-does-it-always-rain-on-me" class="level2">
+<h2 class="anchored" data-anchor-id="why-does-it-always-rain-on-me">Why does it always rain on me?</h2>
+<p>There has been a lot of rain recently in Auckland, which has led to some pretty serious and damaging flooding.</p>
+<p>Rainfall is measured by a variable called precipitation.</p>
+<p>When we use the <code>get_nasa_weather_data()</code> function to ask for data, we get back data about the following variables:</p>
+<ul>
+<li><code>temperature_C</code> (the temperature in degrees celsius)</li>
+<li><code>precipitation_mm</code> (the precipitation in millimetres)</li>
+</ul>
+<p>If we want to visualise any of these variables, we need to change which of these variables is <strong>mapped</strong> to the y-axis.</p>
+<div class="code-blanks-instructions-box">
+<p>Change the code below so that rainfall (precipitation) is visualised instead of temperature.</p>
+</div>
+<pre class="code-blanks"><code>weather_data &lt;- get_nasa_weather_data(location = <input class="code-blank-input" data-answer="c(&quot;Auckland&quot;)" data-default="c(&quot;Auckland&quot;)" value="c(&quot;Auckland&quot;)" size="15">,
+                                      start_date = "2023-01-01",
+                                      end_date = "2025-01-01")
+  
+ggplot(data = weather_data) +
+  geom_line(aes(x = date, 
+                y = <input class="code-blank-input" data-answer="temperature_C" data-default="temperature_C" value="temperature_C" size="15">, 
+                colour = location))</code></pre>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Because <code>precipitation_mm</code> is a named variable within the <code>weather_data</code> we have accessed using the <code>get_nasa_weather_data()</code> function, it is a known object to the R code. This is why we don’t use quotes around its name.</p>
+</div>
+</div>
+</section>
+<section id="its-a-date" class="level2">
+<h2 class="anchored" data-anchor-id="its-a-date">It’s a date!</h2>
+<p>We can change the start and end dates for when we would like weather data.</p>
+<div class="code-blanks-instructions-box">
+<p>Try changing the code below so that the visualisation shows the rainfall (precipitation) from the start of 2023 until the end of July 2025.</p>
+</div>
+<pre class="code-blanks"><code>
+weather_data &lt;- get_nasa_weather_data(location = <input class="code-blank-input" data-answer="c(&quot;Auckland&quot;)" data-default="c(&quot;Auckland&quot;)" value="c(&quot;Auckland&quot;)" size="15">,
+                                      start_date = "2023-01-01",
+                                      end_date = <input class="code-blank-input" data-answer="&quot;2025-01-01&quot;" data-default="" value="" size="14">)
+  
+ggplot(data = weather_data) +
+  geom_line(aes(x = date, 
+                y = <input class="code-blank-input" data-answer="temperature_C" data-default="temperature_C" value="temperature_C" size="15">, 
+                colour = location))</code></pre>
+<div class="code-blanks-instructions-box">
+<p>Now, continue to tinker with the code to decide if the following statements are TRUE or FALSE. Explain why you think so in the boxes below the statement.</p>
+</div>
+<div class="code-blanks-response-box">
+<p>There are a number of days without any rainfall (i.e., precipitation is 0).</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-response-box">
+<p>Auckland only gets rain in some months of the year.</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-response-box">
+<p>There were five days in the time period shown where the rainfall was above 45 mm.</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-response-box">
+<p>The labels for the dates are shown for every 6 months.</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+</section>
+<section id="its-a-plot-but-not-that-informative" class="level2">
+<h2 class="anchored" data-anchor-id="its-a-plot-but-not-that-informative">It’s a plot but not that informative</h2>
+<p>There are many additional things we could change about how the visualisation “looks” so that it is a better form of communication, but we will explore these over the rest of the course.</p>
+<p>One key modification we need to make this week though is to add labels to our visualisation, to make it more informative for a reader.</p>
+<p>In particular, we will add:</p>
+<ul>
+<li>A title to describe what the visualisation is about (the locations and variable of interest)</li>
+<li>A subtitle to describe what time period the data represents</li>
+<li>A caption to describe the source of the data</li>
+</ul>
+<div class="code-blanks-instructions-box">
+<p>Run the code below first to see where these labels appear.</p>
+<p>Then read the code to figure out what needs to be changed in the title and subtitle, so that these match what is being visualised.</p>
+</div>
+<pre class="code-blanks"><code>weather_data &lt;- get_nasa_weather_data(location = "Wellington",
+                                      start_date = "2023-01-01",
+                                      end_date = "2025-07-31")
+  
+weather_data %&gt;%  
+  ggplot() +
+  geom_line(aes(x = date, 
+                y = temperature_C, 
+                colour = location)) +
+  labs(title = <input class="code-blank-input" data-answer="&quot;Daily rainfall in Auckland&quot;" data-default="&quot;Daily rainfall in Auckland&quot;" value="&quot;Daily rainfall in Auckland&quot;" size="30">,
+       subtitle = <input class="code-blank-input" data-answer="&quot;2023 - 2023&quot;" data-default="&quot;2023 - 2023&quot;" value="&quot;2023 - 2023&quot;" size="15">,
+       caption = "Data source: NASA POWER API") </code></pre>
+</section>
+<section id="final-lab-challenge" class="level2">
+<h2 class="anchored" data-anchor-id="final-lab-challenge">Final lab challenge</h2>
+<p>There are two more variables that are available using the <code>get_nasa_weather_data()</code> function:</p>
+<ul>
+<li><code>wind_speed_mps</code> (the windspeed in miles per second)</li>
+<li><code>humidity_percent</code> (the humidity as a percentage)</li>
+</ul>
+<div class="code-blanks-instructions-box">
+<p>Here’s what you need to do for the final lab challenge.</p>
+<ul>
+<li>select either wind speed or humidity to explore as your variable of interest</li>
+<li>select two different locations in the world where you think the wind speed or humidity data will show different patterns over time when compared (do not include Auckland as one of the locations)</li>
+</ul>
+</div>
+<div class="code-blanks-response-box">
+<p>Briefly explain in the box below which variable you selected (wind speed or humidity), what two locations you selected, and why you think they will show different patterns when compared.</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-instructions-box">
+<p>Adapt and run the code below so that:</p>
+<ul>
+<li>the two locations used for the visualisation matches your selection above</li>
+<li>the last three years of data is used</li>
+<li>the variable used for the visualisation matches your selection (wind speed or humidity)</li>
+<li>the labels inform the reader about the locations, variable of interest, time period, and source of the data used for the visualisation</li>
+</ul>
+</div>
+<pre class="code-blanks"><code>
+weather_data &lt;- get_nasa_weather_data(location = <input class="code-blank-input" data-answer="&quot;Auckland&quot;" data-default="&quot;Auckland&quot;" value="&quot;Auckland&quot;" size="12">,
+                                      start_date = <input class="code-blank-input" data-answer="&quot;2022-07-23&quot;" data-default="" value="" size="14">,
+                                      end_date = <input class="code-blank-input" data-answer="&quot;2025-07-23&quot;" data-default="" value="" size="14">)
+  
+weather_data %&gt;%  
+  ggplot() +
+  geom_line(aes(x = date, 
+                y = temperature_C, 
+                colour = location)) +
+  labs(title = <input class="code-blank-input" data-answer="&quot;blank1&quot;" data-default="" value="" size="10">,
+       subtitle = <input class="code-blank-input" data-answer="&quot;blank2&quot;" data-default="" value="" size="10">,
+       caption = <input class="code-blank-input" data-answer="&quot;blank3&quot;" data-default="" value="" size="10">) +
+  scale_x_date(date_breaks = "3 months",
+               date_labels = "%d-%b\n%Y",
+               date_minor_breaks = "1 month")</code></pre>
+<p><strong>Make sure you have run the code and checked the output.</strong></p>
+<div class="code-blanks-response-box">
+<p>Briefly describe in the box below what you think the visualisation reveals/communicates about how your variable of interest compares between the two locations over the last three years.</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-response-box">
+<p>Briefly describe in the box below one thing that you thought was interesting statistically about what you explored in this lab.</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-response-box">
+<p>Briefly describe in the box below one thing that you thought was interesting computationally about what you explored in this lab.</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+<div class="code-blanks-response-box">
+<p>Think back across both the lectures and the lab task, and identify something that sparked your curiosity, and made you think “I wonder …”? Write this “I wonder” question below!</p>
+<textarea class="code-blanks-response" rows="2"></textarea>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
