@@ -24,15 +24,17 @@ code-blanks:
     - theme_set(theme_minimal())
 ---
 
-This interactive worked example has been adapted from the first lab task for DATASCI 100, and introductory data science course taught at the University of Auckland | Waipapa Taumata Rau.
+This interactive worked example has been adapted from the first lab task for DATASCI 100, and introductory data science course taught at the University of Auckland | Waipapa Taumata Rau. 
+
+It was written to support our talk at SDSS 2026 titled *Learning through tinkering: Designing interactive worked examples for introductory-level data science students*. The [two-page extended abstract for the talk is available here](https://raw.githubusercontent.com/annafergusson/sdss2026/sdss26_extended_abstract.pdf) and the [slides from the talk can be found here](https://raw.githubusercontent.com/annafergusson/sdss2026/sdss26_slides.pdf).
 
 ::: callout-note
 For the labs actually used with students, a more advanced computational environment is used, to track and save student interactions within the lab task. 
 :::
 
-This is a modified version of the lab task used, as some aspects of the lab task link to material/activities covered in the lectures before the lab task. Our lab tasks also provide interactive "tinker questions" (see Fergusson & Pfannkuch, 2022) which are not included in this version.
+This is a modified version of the lab task used, as some aspects of the lab task link to material/activities covered in the lectures before the lab task. Our lab tasks also provide interactive "tinker questions" ([see Fergusson & Pfannkuch, 2022](https://iase-pub.org/ojs/SERJ/article/download/49/333/2197)) which are not included in this version.
 
-This version of the lab task was created using [Quarto]() and the Quarto extension [`{code-blanks}`]().
+This version of the lab task was created using [Quarto](https://github.com/annafergusson/sdss2026/blob/main/index.qmd) and the Quarto extension [`{code-blanks}`](https://github.com/annafergusson/code-blanks).
 
 ## Coding is for everyone!
 
