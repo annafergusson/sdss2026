@@ -6,7 +6,7 @@ favicon: code-blanks.png
 filters:
   - code-blanks
 code-blanks:
-  progressive-reveal: false
+  progressive-reveal: true
   plot-width: 600
   plot-height: 300
   packages:
