@@ -26,7 +26,7 @@ code-blanks:
 
 This interactive worked example has been adapted from the first lab task for DATASCI 100, and introductory data science course taught at the University of Auckland | Waipapa Taumata Rau. 
 
-It was written to support our talk at SDSS 2026 titled *Learning through tinkering: Designing interactive worked examples for introductory-level data science students*. The [two-page extended abstract for the talk is available here](https://raw.githubusercontent.com/annafergusson/sdss2026/sdss26_extended_abstract.pdf) and the [slides from the talk can be found here](https://raw.githubusercontent.com/annafergusson/sdss2026/sdss26_slides.pdf).
+It was written to support our talk at SDSS 2026 titled *Learning through tinkering: Designing interactive worked examples for introductory-level data science students*. The [two-page extended abstract for the talk is available here](https://raw.githubusercontent.com/annafergusson/sdss2026/main/sdss26_extended_abstract.pdf) and the [slides from the talk can be found here](https://raw.githubusercontent.com/annafergusson/sdss2026/main/sdss26_slides.pdf).
 
 ::: callout-note
 For the labs actually used with students, a more advanced computational environment is used, to track and save student interactions within the lab task. 
