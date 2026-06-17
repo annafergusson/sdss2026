@@ -534,7 +534,7 @@ weather_data &lt;- get_nasa_weather_data(location = <input class="code-blank-inp
 weather_data %&gt;%  
   ggplot() +
   geom_line(aes(x = date, 
-                y = temperature_C, 
+                y = <input class="code-blank-input" data-answer="temperature_C" data-default="temperature_C" value="temperature_C" size="15">, 
                 colour = location)) +
   labs(title = <input class="code-blank-input" data-answer="&quot;blank1&quot;" data-default="" value="" size="10">,
        subtitle = <input class="code-blank-input" data-answer="&quot;blank2&quot;" data-default="" value="" size="10">,

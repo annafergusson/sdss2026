@@ -602,7 +602,7 @@ Adapt and run the code below so that:
 #|  match: text
 
 #| blank:
-#|  target: "temperature_C"
+#|  target: temperature_C
 #|  prefill: true
 #|  occurrence: 1
 #|  match: text
