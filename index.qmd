@@ -557,7 +557,7 @@ weather_data %>%
 
 There are two more variables that are available using the `get_nasa_weather_data()` function:
 
-- `wind_speed_mps` (the windspeed in miles per second)
+- `wind_speed_mps` (the windspeed in metres per second)
 - `humidity_percent` (the humidity as a percentage)
 
 ```{code-blanks-instructions}
