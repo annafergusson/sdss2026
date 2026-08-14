@@ -44,7 +44,7 @@ ul.task-list li input[type="checkbox"] {
 <script>window.codeBlanksFunctions = (window.codeBlanksFunctions || "") + "\n" + `get_nasa_weather_data <- function(location, start_date = NULL, end_date = format(Sys.Date() - 1, "%Y-%m-%d")) {
   locations <- c(location)
   data <- map_df(locations, function(loc) {
-    url <- paste0("https://www.stat-edu.cloud.edu.au/foo/nasa_weather_data.php?location=", loc,"&start_date=", start_date, "&end_date=", end_date) %>% URLencode()
+    url <- paste0("https://datalandscapes.online/scripts/nasa_weather_data.php?location=", loc,"&start_date=", start_date, "&end_date=", end_date) %>% URLencode()
     tryCatch({
       result <- fromJSON(url)
       if (length(result) == 0) {
@@ -503,7 +503,7 @@ weather_data %&gt;%
 <h2 class="anchored" data-anchor-id="final-lab-challenge">Final lab challenge</h2>
 <p>There are two more variables that are available using the <code>get_nasa_weather_data()</code> function:</p>
 <ul>
-<li><code>wind_speed_mps</code> (the windspeed in metres per second)</li>
+<li><code>wind_speed_mps</code> (the windspeed in miles per second)</li>
 <li><code>humidity_percent</code> (the humidity as a percentage)</li>
 </ul>
 <div class="code-blanks-instructions-box">
